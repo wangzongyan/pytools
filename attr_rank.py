@@ -46,9 +46,9 @@ class attr_rank(object):
 		if (x.dtype == 'float64' or x.dtype == 'int64')and len(np.unique(x)) > n:
 			x = np.array(x)
 			var = np.array(np.repeat('nan', len(x)), dtype = 'object')
-			points = [np.nanpercentile(x, 100/n * i) for i in range(n)]
+			points = [np.nanpercentile(x, 100/n * i) for i in range(n+1)]
 			# print(points)
-			for idx in range(n-1):
+			for idx in range(n):
 				var[[v for v in range(len(x)) if points[idx] <= x[v] < points[idx + 1]]] = "%.2f - %.2f"%(points[idx], points[idx + 1])
 			return var
 		else:
