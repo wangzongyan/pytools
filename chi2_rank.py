@@ -10,7 +10,7 @@ class chi2_rank(attr_rank):
         attr_rank.__init__(self)
 
     @classmethod
-    def chi2_contingency(cls, x, y, continuous_x = 10, continuous_y = 10):
+    def chi2_contingency(cls, x, y, continuous_x=10, continuous_y=10):
         """
         To do:
             This function gives the chi-square independency test for two input variables
@@ -73,13 +73,13 @@ class chi2_rank(attr_rank):
         continuous_n = [continuous_x, continuous_y]
         for i in range(num_of_top):
             output_dict['top_related_variable%d' % (i+1)] = np.repeat(0, dim).tolist()
-        output_df = pd.DataFrame(output_dict, index=range(dim), dtype = np.float64)
+        output_df = pd.DataFrame(output_dict, index=range(dim), dtype=np.float64)
         for i in output_df.index:
             var_x = output_df.loc[i, 'var']
             chi_obj = self.chi2_contingency(X[var_x].values,
                                             y, *continuous_n)
             output_df.loc[i, ['p_value', 'chi2', 'DOF']] = pd.Series({
-                'p_value':chi_obj['p_value'],
+                'p_value': chi_obj['p_value'],
                 'chi2': chi_obj['chi2'],
                 'DOF': chi_obj['DOF']})
         if num_of_top > 0:
@@ -99,10 +99,10 @@ class chi2_rank(attr_rank):
                 list_of_variables, dtype = 'object')[independency_order]
             # add p-value after num_of_top varaibles names
             ind_df = independency_df.copy()
-            ind_df.sort(axis = 1)
+            ind_df.sort(axis=1)
             ind_df = np.array(
-                ["_p-values:%g"%p for p in np.array(ind_df.reshape(ind_df.size))],
-                dtype = 'object').reshape((dim, -1))[np.arange(dim), 0:num_of_top]
+                ["_p-values:%g" % p for p in np.array(ind_df.reshape(ind_df.size))],
+                dtype='object').reshape((dim, -1))[np.arange(dim), 0:num_of_top]
             output_df[sorted([x for x in output_df.columns if x.find('top_') == 0])] += ind_df
 
         try:
