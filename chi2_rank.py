@@ -73,13 +73,13 @@ class chi2_rank(attr_rank):
         continuous_n = [continuous_x, continuous_y]
         for i in range(num_of_top):
             output_dict['top_related_variable%d' % (i+1)] = np.repeat(0, dim).tolist()
-        output_df = pd.DataFrame(output_dict, index=range(dim), dtype = np.float64)
+        output_df = pd.DataFrame(output_dict, index=range(dim), dtype=np.float64)
         for i in output_df.index:
             var_x = output_df.loc[i, 'var']
             chi_obj = self.chi2_contingency(X[var_x].values,
                                             y, *continuous_n)
             output_df.loc[i, ['p_value', 'chi2', 'DOF']] = pd.Series({
-                'p_value':chi_obj['p_value'],
+                'p_value': chi_obj['p_value'],
                 'chi2': chi_obj['chi2'],
                 'DOF': chi_obj['DOF']})
         if num_of_top > 0:
