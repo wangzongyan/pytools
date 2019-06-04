@@ -42,7 +42,7 @@ class attr_rank(object):
     def cut_variable_nth(x, n):
         if (x.dtype == 'float64' or x.dtype == 'int64')and len(np.unique(x)) > n:
             x = np.array(x)
-            var = np.array(np.repeat('nan', len(x)), dtype = 'object')
+            var = np.array(np.repeat('nan', len(x)), dtype='object')
             points = [np.nanpercentile(x, 100/n * i) for i in range(n+1)]
             # print(points)
             for idx in range(n):

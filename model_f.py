@@ -31,7 +31,7 @@ def pred_q(var_list, n=10, format='origin'):
     for i in range(n):
         level = i
         if format == 'origin':
-            level = '%s to %s'%(points[i], points[i+1])
+            level = '%s to %s' % (points[i], points[i+1])
         else:
             level = '%.1f%% to %.1f%%'%(points[i], points[i+1])
         q[np.array([points[i] <= x <= points[i+1] for x in col])] = level
@@ -39,7 +39,7 @@ def pred_q(var_list, n=10, format='origin'):
     return q
 
 
-def pred_range(var_list, range_l = [0, .1, .2, .3, .4, .5, .6, .7, .8, .9, 1], format = 'origin'):
+def pred_range(var_list, range_l=[0, .1, .2, .3, .4, .5, .6, .7, .8, .9, 1], format='origin'):
     """
     use pd.cut instead.
     This function produce ``var``segment based on given ``range_l``
@@ -99,10 +99,10 @@ def pivot_num(data, var, performance='bad_ind', n=10, ks=True, max_ks_only=False
             'bad rate': temp_missing[performance].mean(),
             'count': temp_missing.shape[0],
             'ks': np.nan
-        }, index = [n+1,])
+        }, index=[n+1, ])
     # temp = group[['bad rate', 'count']].copy()
     if ks or max_ks_only:
-        group['bad'] = [r * c for r,c in zip(group['bad rate'], group['count'])]
+        group['bad'] = [r * c for r, c in zip(group['bad rate'], group['count'])]
         group['cum_bad'] = [sum(group.loc[0:i, 'bad']) for i in range(group.shape[0])]
         group['cum_count'] = [sum(group.loc[0:i, 'count']) for i in range(group.shape[0])]
         group['cum_good'] = [c - b for c, b in zip(group['cum_count'], group['cum_bad'])]
@@ -111,23 +111,23 @@ def pivot_num(data, var, performance='bad_ind', n=10, ks=True, max_ks_only=False
             for g, b in zip(group.cum_good, group.cum_bad)]
         max_index = group['ks'].idxmax()
         if max_ks_only:
-            return group.loc[[max_index,], ['var', 'ks']]
-        group['ks'] = ['%.1f%%'%x for x in group['ks']]
+            return group.loc[[max_index, ], ['var', 'ks']]
+        group['ks'] = ['%.1f%%' % x for x in group['ks']]
         group = group.append(group_missing)
-        group['bad rate'] = ['%.2f%%'%(x * 100) for x in group['bad rate']]
+        group['bad rate'] = ['%.2f%%' % (x * 100) for x in group['bad rate']]
 
         def highlight(s):
             return 'background-color: yellow'
-        group.style.applymap(highlight, subset = pd.IndexSlice[max_index, ['ks']])
+        group.style.applymap(highlight, subset=pd.IndexSlice[max_index, ['ks']])
 
         return group[['var', 'level', 'bad rate', 'count', 'cum_bad', 'cum_good', 'ks']]
     else:
         group = group.append(group_missing[['var', 'level', 'bad rate', 'count']])
-        group.rename(columns = {'bad rate': 'avg %s'%performance}, inplace = True)
-        return group[['var', 'level', 'avg %s'%performance, 'count']]
+        group.rename(columns = {'bad rate': 'avg %s' % performance}, inplace=True)
+        return group[['var', 'level', 'avg %s' % performance, 'count']]
 
 
-def model_ks_plot(data, var_list, label=['Risk Model', ], performance = 'bad_ind',
+def model_ks_plot(data, var_list, label=['Risk Model', ], performance='bad_ind',
                   title='Model Performance',
                   line_size=1,
                   title_font_size=18,
@@ -136,7 +136,7 @@ def model_ks_plot(data, var_list, label=['Risk Model', ], performance = 'bad_ind
 
     color = call_color()
     ax = plt.subplot(1, 1, 1)
-    ax.plot(np.arange(0, 101, 5), np.arange(0,101, 5), color='black', label='Random', linewidth = line_size)
+    ax.plot(np.arange(0, 101, 5), np.arange(0, 101, 5), color='black', label='Random', linewidth = line_size)
     # test color set
     if len(color) < len(var_list):
         for i in np.arange(len(color), len(var_list)):
@@ -147,7 +147,7 @@ def model_ks_plot(data, var_list, label=['Risk Model', ], performance = 'bad_ind
     arrow_x_list = []
     for i, var in enumerate(var_list):
         # get pivot data
-        t = pivot_num(data, var, performance = performance, n=10, ks=True, max_ks_only=False)
+        t = pivot_num(data, var, performance=performance, n=10, ks=True, max_ks_only=False)
         t = t.loc[:9, ['cum_bad', 'cum_good', 'ks']]
         t0 = pd.DataFrame({'cum_bad': [0, ], 'cum_good': [0, ], 'ks': ['0%', ]}, index=[0, ])
         t = pd.concat([t0, t]).reset_index()
@@ -158,15 +158,15 @@ def model_ks_plot(data, var_list, label=['Risk Model', ], performance = 'bad_ind
 
         if arrow_y > arrow_x:
             ax.plot(t.loc[:10, 'cum_good']/t.loc[10, 'cum_good'].sum() * 100,
-                    t.loc[:10, 'cum_bad']/t.loc[10, 'cum_bad'].sum() * 100, 
-                    color=color[i], label=label[i], linewidth = line_size)
+                    t.loc[:10, 'cum_bad']/t.loc[10, 'cum_bad'].sum() * 100,
+                    color=color[i], label=label[i], linewidth=line_size)
             ax.set_xlabel('%cum good', fontsize=x_label_size)
             ax.set_ylabel('%cum bad', fontsize=y_label_size)
         else:
             arrow_x, arrow_y = arrow_y, arrow_x
             ax.plot(t.loc[:10, 'cum_bad']/t.loc[10, 'cum_bad'].sum() * 100,
                     t.loc[:10, 'cum_good']/t.loc[10, 'cum_good'].sum() * 100,
-                    color = color[i], label=label[i], linewidth = line_size)
+                    color=color[i], label=label[i], linewidth=line_size)
             ax.set_ylabel('%cum good', fontsize=y_label_size)
             ax.set_xlabel('%cum bad', fontsize=x_label_size)
         j = 0
@@ -187,14 +187,15 @@ def model_ks_plot(data, var_list, label=['Risk Model', ], performance = 'bad_ind
     return ax
 
 
-def group_scatter_plot(df, group_var, x, y, x_group_n = 10, fill_std = False, ticks_font = 10, label_font = 14):
+def group_scatter_plot(df, group_var, x, y, x_group_n=10, fill_std=False, ticks_font=10, label_font=14):
     color = call_color()
-    ax = plt.subplot(1,1,1)
+    ax = plt.subplot(1, 1, 1)
     temp = df[group_var + [x, y]].copy()
-    # xlim_low, xlim_high = np.nanmedian(temp[x]) - 3 * np.nanstd(temp[x]), np.nanmedian(temp[x]) + 3 * np.nanstd(temp[x])
-    temp = temp.loc[[str(a) != 'nan' and str(b) != 'nan' for 
-                     a,b in zip(temp[x], temp[y])], :]
-    temp['x_q'] = pred_q(temp[x], n = x_group_n, format = 'order')
+    # xlim_low, xlim_high =
+    # np.nanmedian(temp[x]) - 3 * np.nanstd(temp[x]), np.nanmedian(temp[x]) + 3 * np.nanstd(temp[x])
+    temp = temp.loc[[str(a) != 'nan' and str(b) != 'nan' for
+                     a, b in zip(temp[x], temp[y])], :]
+    temp['x_q'] = pred_q(temp[x], n=x_group_n, format='order')
     x_ticks = temp[x].tolist()
     x_ticks.sort()
     x_index = [len(x_ticks)/x_group_n * i for i in range(1, x_group_n + 1)]
@@ -202,11 +203,11 @@ def group_scatter_plot(df, group_var, x, y, x_group_n = 10, fill_std = False, ti
     try:
         x_ticks = [float(i) for i in x_ticks]
         if np.mean(x_ticks) < 1:
-            x_ticks = ['<= %.1f%%'%(i*100) for i in x_ticks]
+            x_ticks = ['<= %.1f%%' % (i*100) for i in x_ticks]
         else:
-            x_ticks = ['<= %.1f'%i for i in x_ticks]
+            x_ticks = ['<= %.1f' % i for i in x_ticks]
     except:
-        x_ticks = ['<=%s'%i for i in x_ticks]
+        x_ticks = ['<=%s' % i for i in x_ticks]
     for i, [key, df] in enumerate(temp.groupby(group_var)):
         df_dict = dict()
         for j in range(x_group_n):
@@ -252,10 +253,12 @@ def plot_des(df, var):
         temp_group = temp.loc[temp[var] == i, :]
         temp_group.sort_values('year_month', inplace = True)
         temp_group['year_month_index'] = np.arange(len(temp_group))
-        ax[0].scatter(temp_group['year_month_index'], temp_group['bad_rate'], s = temp_group['percentage']*100, label = None)
-        ax[0].plot(temp_group['year_month_index'], temp_group['bad_rate'], label = i)
-        ax[1].scatter(temp_group['year_month_index'], temp_group['net_margin'], s = temp_group['percentage']*100, label = None)
-        ax[1].plot(temp_group['year_month_index'], temp_group['net_margin'], label = i)
+        ax[0].scatter(temp_group['year_month_index'], temp_group['bad_rate'], s=temp_group['percentage']*100,
+                      label=None)
+        ax[0].plot(temp_group['year_month_index'], temp_group['bad_rate'], label=i)
+        ax[1].scatter(temp_group['year_month_index'], temp_group['net_margin'], s=temp_group['percentage']*100,
+                      label=None)
+        ax[1].plot(temp_group['year_month_index'], temp_group['net_margin'], label=i)
     ax[1].set_xlabel(var)
     ax[0].set_ylabel('bad rate')
     ax[1].set_ylabel('net margin')

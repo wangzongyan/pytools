@@ -10,11 +10,11 @@ def woe_iv(x, y, n=10, detail=False):
         y: np.array, bad ind
         n: number of split, default is 10
     """
-    df = pd.DataFrame({'x': np.array(x), 'y': np.array(y)}, index = range(len(x)))
+    df = pd.DataFrame({'x': np.array(x), 'y': np.array(y)}, index=range(len(x)))
     # points = [np.nanpercentile(x, 100/n*i) for i in range(n+1)]
     df['bins'] = pd.qcut(df['x'], q=n, duplicates='drop')
     df['bins'] = [str(x) for x in df.bins]
-    df['labels'] = pd.qcut(df['x'], q=n, duplicates='drop', labels = False)
+    df['labels'] = pd.qcut(df['x'], q=n, duplicates='drop', labels=False)
     out = df.groupby('bins').apply(lambda obj: pd.Series({
                     'labels': obj.labels.unique()[0],
                     'counts': len(obj),

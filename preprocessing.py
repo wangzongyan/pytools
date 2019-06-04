@@ -12,7 +12,7 @@ def convert_dummy_df(df,
         df[i] = convert_to_float(df[i].values)
         if df[i].dtype == 'O' and df[i].nunique() > drop_unique_rate * len(df[i]):
             df = df.drop(i, axis=1)
-    df_dummy = pd.get_dummies(df, dummy_na = True, drop_first = drop_first)
+    df_dummy = pd.get_dummies(df, dummy_na=True, drop_first=drop_first)
 
     """Deal with missing values"""
     kk = df_dummy.isnull().sum()
@@ -38,7 +38,7 @@ def convert_dummy_df(df,
     return df_dummy
 
 
-def convert_to_float(var, replace_missing = np.nan):
+def convert_to_float(var, replace_missing=np.nan):
     """
         To do:
             This function replace '', '(null)', " " into numpy nan and transform var
@@ -58,7 +58,7 @@ def convert_to_float(var, replace_missing = np.nan):
     var_float = var.copy()
     var_float = [str(x) for x in var_float.flat]
     var_float[var_float == ''] = np.nan
-    var_float[var_float == ' '] = np.nan 
+    var_float[var_float == ' '] = np.nan
     var_float[var_float == '(null)'] = np.nan
     var_float = [s.replace('$', '').replace(',', '').replace(' ', '').replace('#', '') if str(s) != 'nan'
                  else np.nan for s in var_float]
