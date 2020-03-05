@@ -15,6 +15,9 @@ def model_ks_plot(data: PandasDF, var_list: List[str], label: int = ['Risk Model
                   title_font_size: int = 18,
                   x_label_size: int = 12, y_label_size: int = 12,
                   legend_font_size: int = 12, annotaion_font_size: int = 12) -> None:
+    """
+    Plot the KS chart
+    """
 
     color = call_color()
     ax = plt.subplot(1, 1, 1)
