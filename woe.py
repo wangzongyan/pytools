@@ -29,11 +29,11 @@ def iv_rank(df: PandasDF, y: Union[List[float], Array],
             out.loc[idx, 'iv'] = woe_iv(var, y, n=n)['iv']
         else:
             pass
-    out['predictiveness'] = ['Not useful' if x < 0.02 else (
-                                         'Weak' if 0.02 <= x < .1 else (
-                                            'Medium' if 0.1 <= x < .3 else
-                                            'Strong' if 0.3 <= x < .5 else
-                                            'Suspicous' if x > .5 else 'NaN')) for x in out.iv]
+    out['predictiveness'] = ['Not useful' if x < 0.02 else
+                             'Weak' if 0.02 <= x < .1 else
+                             'Medium' if 0.1 <= x < .3 else
+                             'Strong' if 0.3 <= x < .5 else
+                             'Suspicous' if x > .5 else 'NaN' for x in out.iv]
     if sorted:
         out = out.sort_values('iv', ascending=False).reset_index(drop=True)
     return out
