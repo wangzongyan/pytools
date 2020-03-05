@@ -8,7 +8,9 @@ pd.options.mode.chained_assignment = None
 
 def pivot_num(data: PandasDF, var: str, performance: str = 'bad_ind',
               n: int = 10, ks: float = True, max_ks_only: float = False) -> PandasDF:
-    """ Output the bad rate segment for a particular variable in group
+    """
+    Output the bad rate segment for a particular variable in group
+
     Parameter
         data: A pandas Dataframe, data
         var: A string, variable interested

@@ -12,50 +12,14 @@ class chi2_rank(attr_rank):
     def __init__(self):
         attr_rank.__init__(self)
 
-    @classmethod
-    def chi2_contingency(cls, x: Union[Array, List[Any]],
-                         y: Union[Array, List[Any]],
-                         continuous_x: int = 10, continuous_y: int = 10):
-        """
-        To do:
-            This function gives the chi-square independency test for two input variables
-        Parameter:
-            x (numpy array): first attribute
-            y (numpy array): second attribute
-            continuous_x (int): number of parts divided for x if x is continuous
-            continuous_y (int): number of parts divided for y if y is continuous
-        Return:
-            chi2, p-value, degree-of-freedom, expected-frequency table
-        """
-        if type(y).__name__ == pd.Series.__name__:
-            y = y.values
-        if type(x).__name__ == pd.Series.__name__:
-            x = x.values
-
-        if len(x) != len(y):
-            raise AttributeError("x and y don't have equal length.")
-        elif (sum([str(e) != 'nan' for e in x.flat]) < round(len(x)/20) or
-                sum([str(e) != 'nan' for e in y.flat]) < round(len(y)/20)):
-            result = np.repeat(np.nan, 4)
-        elif np.array_equal(x, y):
-            result = np.repeat(-1, 4)
-            warnings.warn('Array x and y are the same.')
-        else:
-            table = cls.contingency_table(x, y, continuous_x, continuous_y)
-            if len(table) == 0:
-                return np.repeat(np.nan, 4)
-            result = chi2_contingency(table)
-        result = dict(zip(['chi2', 'p_value', 'DOF', 'expected_freq'], result))
-        return result
-
     def chi2_contingency_rank(self, X: PandasDF, y: Union[Array, List[Any]],
                               continuous_x: int = 10, continuous_y: int = 10,
                               num_of_top: int = 0):
         """
-        To do:
-            This function gives the chi-square independency test between y and each columns in X.
-            The function also gives an option
-            to list top related variables to each of the variables by doing a pairwise chi2_contigency test.
+        Gives the chi-square independency test between y and each columns in X.
+        The function also gives an option
+        to list top related variables to each of the variables by doing a pairwise chi2_contigency test.
+
         Parameter:
             X (pandas DF): Independence variabels of interest
             y (np.array): dependence variable
@@ -118,3 +82,39 @@ class chi2_rank(attr_rank):
                              [x for x in output_df.columns if x.find('top_') == 0]]
         except ValueError:
             return output_df[['p_value', 'chi2', 'DOF']]
+
+    @classmethod
+    def chi2_contingency(cls, x: Union[Array, List[Any]],
+                         y: Union[Array, List[Any]],
+                         continuous_x: int = 10, continuous_y: int = 10):
+        """
+        Gives the chi-square independency test for two input variables
+
+        Parameter:
+            x (numpy array): first attribute
+            y (numpy array): second attribute
+            continuous_x (int): number of parts divided for x if x is continuous
+            continuous_y (int): number of parts divided for y if y is continuous
+        Return:
+            chi2, p-value, degree-of-freedom, expected-frequency table
+        """
+        if type(y).__name__ == pd.Series.__name__:
+            y = y.values
+        if type(x).__name__ == pd.Series.__name__:
+            x = x.values
+
+        if len(x) != len(y):
+            raise AttributeError("x and y don't have equal length.")
+        elif (sum([str(e) != 'nan' for e in x.flat]) < round(len(x)/20) or
+                sum([str(e) != 'nan' for e in y.flat]) < round(len(y)/20)):
+            result = np.repeat(np.nan, 4)
+        elif np.array_equal(x, y):
+            result = np.repeat(-1, 4)
+            warnings.warn('Array x and y are the same.')
+        else:
+            table = cls.contingency_table(x, y, continuous_x, continuous_y)
+            if len(table) == 0:
+                return np.repeat(np.nan, 4)
+            result = chi2_contingency(table)
+        result = dict(zip(['chi2', 'p_value', 'DOF', 'expected_freq'], result))
+        return result

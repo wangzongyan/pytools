@@ -6,10 +6,45 @@ from numpy import array as Array
 from typing import Dict, List, Union
 
 
+def iv_rank(df: PandasDF, y: Union[List[float], Array],
+            n: int = 10, min_split: int = 10, sorted: bool = True) -> PandasDF:
+    """
+    Rank the attributes using information value
+
+    param:
+        df: data with independent variables
+        y: data with dependent variable
+        n: number of split when doing woe
+        min_split: min number of unique values to consider a variable continuous
+        sorted: sort the output by iv in descending order
+    """
+    out = pd.DataFrame({
+        'var': list(df.columns),
+        'iv': np.repeat(np.nan, len(df.columns))},
+        index=range(len(df.columns)))
+    for idx in out.index:
+        var = out.loc[idx, 'var']
+        var = pd.to_numeric(df[var], errors='coerce')
+        if var.nunique() >= min_split:
+            out.loc[idx, 'iv'] = woe_iv(var, y, n=n)['iv']
+        else:
+            pass
+    out['predictiveness'] = ['Not useful' if x < 0.02 else (
+                                         'Weak' if 0.02 <= x < .1 else (
+                                            'Medium' if 0.1 <= x < .3 else
+                                            'Strong' if 0.3 <= x < .5 else
+                                            'Suspicous' if x > .5 else 'NaN')) for x in out.iv]
+    if sorted:
+        out = out.sort_values('iv', ascending=False).reset_index(drop=True)
+    return out
+
+
 def woe_iv(x: Union[List[float], Array],
            y: Union[List[float], Array], n: int = 10, detail: bool = False
            ) -> Dict[str, float]:
     """
+    Get the woe and information value for two variables
+
     param:
         x: np.array, a continuous variable for woe calculating
         y: np.array, bad ind
@@ -42,34 +77,3 @@ def woe_iv(x: Union[List[float], Array],
         out = out[['bins', 'labels', 'counts', 'min', 'max', 'bad rate', 'woe', 'iv']]
     iv = np.nansum(out.iv)
     return {'woe': out, 'iv': iv}
-
-
-def iv_rank(df: PandasDF, y: Union[List[float], Array],
-            n: int = 10, min_split: int = 10, sorted: bool = True) -> PandasDF:
-    """
-    param:
-        df: data with independent variables
-        y: data with dependent variable
-        n: number of split when doing woe
-        min_split: min number of unique values to consider a variable continuous
-        sorted: sort the output by iv in descending order
-    """
-    out = pd.DataFrame({
-        'var': list(df.columns),
-        'iv': np.repeat(np.nan, len(df.columns))},
-        index=range(len(df.columns)))
-    for idx in out.index:
-        var = out.loc[idx, 'var']
-        var = pd.to_numeric(df[var], errors='coerce')
-        if var.nunique() >= min_split:
-            out.loc[idx, 'iv'] = woe_iv(var, y, n=n)['iv']
-        else:
-            pass
-    out['predictiveness'] = ['Not useful' if x < 0.02 else (
-                                         'Weak' if 0.02 <= x < .1 else (
-                                            'Medium' if 0.1 <= x < .3 else
-                                            'Strong' if 0.3 <= x < .5 else
-                                            'Suspicous' if x > .5 else 'NaN')) for x in out.iv]
-    if sorted:
-        out = out.sort_values('iv', ascending=False).reset_index(drop=True)
-    return out
