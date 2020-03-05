@@ -52,7 +52,7 @@ def convert_to_float(var: Union[List[Any], Array], replace_missing: float = np.n
     if var.dtype == np.datetime64:
         var = np.array([x - np.datetime64('0000-01-01T00:00') if str(x) != 'NaT' else np.nan for x in var])
         return var
-    var_float = var.copy()
+    var_float = [str(x) for x in var]
     var_float = [s.replace('$', '').replace(',', '').replace(' ', '').replace('#', '') if str(s) != 'nan'
                  else np.nan for s in var_float]
     return pd.to_numeric(var_float, errors='coerce')
