@@ -1,7 +1,7 @@
 import pandas as pd
 import numpy as np
 import warnings
-from attr_rank import attr_rank
+from .attr_rank import attr_rank
 from pandas import DataFrame as PandasDF
 from numpy import array as Array
 from scipy.stats import chi2_contingency
@@ -13,8 +13,8 @@ class chi2_rank(attr_rank):
         attr_rank.__init__(self)
 
     @classmethod
-    def chi2_contingency(cls, x: Union[Array[Any], List[Any]],
-                         y: Union[Array[Any], List[Any]],
+    def chi2_contingency(cls, x: Union[Array, List[Any]],
+                         y: Union[Array, List[Any]],
                          continuous_x: int = 10, continuous_y: int = 10):
         """
         To do:
@@ -48,7 +48,7 @@ class chi2_rank(attr_rank):
         result = dict(zip(['chi2', 'p_value', 'DOF', 'expected_freq'], result))
         return result
 
-    def chi2_contingency_rank(self, X: PandasDF, y: Union[Array[Any], List[Any]],
+    def chi2_contingency_rank(self, X: PandasDF, y: Union[Array, List[Any]],
                               continuous_x: int = 10, continuous_y: int = 10,
                               num_of_top: int = 0):
         """

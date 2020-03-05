@@ -56,7 +56,7 @@ def model_ks_plot(data: PandasDF, var_list: List[str], label: int = ['Risk Model
             j += 1
         ax.annotate(s='', xy=(arrow_x, arrow_x), xytext=(arrow_x, arrow_y),
                     arrowprops=dict(arrowstyle='<->', color=color[i]))
-        ax.annotate('%s ks = %.1f%%'%(label[i], t['ks'].max()),
+        ax.annotate(f"{label[i]} ks = {round(t['ks'].max(), 1)}%%",
                     xy=(arrow_x, arrow_x - 3*(j+1)), xytext=(5, 0),
                     textcoords='offset points', color=color[i], fontsize=annotaion_font_size)
         arrow_x_list.append(arrow_x)

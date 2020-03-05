@@ -6,8 +6,8 @@ from numpy import array as Array
 from typing import Dict, List, Union
 
 
-def woe_iv(x: Union[List[float], Array[float]],
-           y: Union[List[float], Array[float]], n: int = 10, detail: bool = False
+def woe_iv(x: Union[List[float], Array],
+           y: Union[List[float], Array], n: int = 10, detail: bool = False
            ) -> Dict[str, float]:
     """
     param:
@@ -44,7 +44,7 @@ def woe_iv(x: Union[List[float], Array[float]],
     return {'woe': out, 'iv': iv}
 
 
-def iv_rank(df: PandasDF, y: Union[List[float], Array[float]],
+def iv_rank(df: PandasDF, y: Union[List[float], Array],
             n: int = 10, min_split: int = 10, sorted: bool = True) -> PandasDF:
     """
     param:

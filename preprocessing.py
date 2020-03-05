@@ -41,35 +41,18 @@ def convert_dummy_df(df: PandasDF,
     return df_dummy
 
 
-def convert_to_float(var: Union[List[Any], Array], replace_missing: float = np.nan) -> Array[Any]:
+def convert_to_float(var: Union[List[Any], Array], replace_missing: float = np.nan) -> Array:
     """
-        To do:
-            This function replace '', '(null)', " " into numpy nan and transform var
-            into float64 type
-        param:
-            var (numpy array): an numpy array of var
-        """
-    if var.dtype == np.float64 or var.dtype == np.float32 or var.dtype == np.float64:
-        var = var.astype(np.float64)
-        return var
-    if var.dtype == np.int64 or var.dtype == np.int32 or var.dtype == np.int64:
-        var = var.astype(np.int64)
-        return var
+    This function replace '', '(null)', " " into numpy nan and transform var
+    into float64 type
+
+    param:
+        var (numpy array): an numpy array of var
+    """
     if var.dtype == np.datetime64:
         var = np.array([x - np.datetime64('0000-01-01T00:00') if str(x) != 'NaT' else np.nan for x in var])
         return var
     var_float = var.copy()
-    var_float = [str(x) for x in var_float.flat]
-    var_float[var_float == ''] = np.nan
-    var_float[var_float == ' '] = np.nan
-    var_float[var_float == '(null)'] = np.nan
     var_float = [s.replace('$', '').replace(',', '').replace(' ', '').replace('#', '') if str(s) != 'nan'
                  else np.nan for s in var_float]
-    try:
-        var_float = np.array([float(x) for x in var_float],
-                             dtype='float64').reshape(var_float.shape)
-        return var_float
-    except ValueError:
-        warnings.warn("Cannot transform to numpy float64.")
-        var = np.array([str(x) if str(x) != 'nan' else replace_missing for x in var.flat], dtype='object')
-        return var
+    return pd.to_numeric(var_float, errors='coerce')
