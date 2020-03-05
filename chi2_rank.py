@@ -1,8 +1,11 @@
-from scipy.stats import chi2_contingency
-from .attr_rank import attr_rank
 import pandas as pd
 import numpy as np
 import warnings
+from attr_rank import attr_rank
+from pandas import DataFrame as PandasDF
+from numpy import array as Array
+from scipy.stats import chi2_contingency
+from typing import Any, List, Union
 
 
 class chi2_rank(attr_rank):
@@ -10,7 +13,9 @@ class chi2_rank(attr_rank):
         attr_rank.__init__(self)
 
     @classmethod
-    def chi2_contingency(cls, x, y, continuous_x=10, continuous_y=10):
+    def chi2_contingency(cls, x: Union[Array[Any], List[Any]],
+                         y: Union[Array[Any], List[Any]],
+                         continuous_x: int = 10, continuous_y: int = 10):
         """
         To do:
             This function gives the chi-square independency test for two input variables
@@ -43,9 +48,9 @@ class chi2_rank(attr_rank):
         result = dict(zip(['chi2', 'p_value', 'DOF', 'expected_freq'], result))
         return result
 
-    def chi2_contingency_rank(self, X, y,
-                              continuous_x=10, continuous_y=10,
-                              num_of_top=0):
+    def chi2_contingency_rank(self, X: PandasDF, y: Union[Array[Any], List[Any]],
+                              continuous_x: int = 10, continuous_y: int = 10,
+                              num_of_top: int = 0):
         """
         To do:
             This function gives the chi-square independency test between y and each columns in X.
@@ -94,9 +99,9 @@ class chi2_rank(attr_rank):
                         independency_df[i, j] = self.chi2_contingency(
                             X[var_x].values,
                             X[var_y].values, *continuous_n)['p_value']
-            independency_order = np.argsort(independency_df, axis = 1)[np.arange(dim), 0:num_of_top]
+            independency_order = np.argsort(independency_df, axis=1)[np.arange(dim), 0:num_of_top]
             output_df[sorted([x for x in output_df.columns if x.find('top_') == 0])] = np.array(
-                list_of_variables, dtype = 'object')[independency_order]
+                list_of_variables, dtype='object')[independency_order]
             # add p-value after num_of_top varaibles names
             ind_df = independency_df.copy()
             ind_df.sort(axis=1)
@@ -111,5 +116,5 @@ class chi2_rank(attr_rank):
             output_df = output_df.sort_values('importance_rank').reset_index(drop=True)
             return output_df[['importance_rank', 'var', 'p_value', 'chi2', 'DOF'] +
                              [x for x in output_df.columns if x.find('top_') == 0]]
-        except:
+        except ValueError:
             return output_df[['p_value', 'chi2', 'DOF']]

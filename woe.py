@@ -1,9 +1,14 @@
 import numpy as np
 import pandas as pd
 import math
+from pandas import DataFrame as PandasDF
+from numpy import array as Array
+from typing import Dict, List, Union
 
 
-def woe_iv(x, y, n=10, detail=False):
+def woe_iv(x: Union[List[float], Array[float]],
+           y: Union[List[float], Array[float]], n: int = 10, detail: bool = False
+           ) -> Dict[str, float]:
     """
     param:
         x: np.array, a continuous variable for woe calculating
@@ -39,7 +44,8 @@ def woe_iv(x, y, n=10, detail=False):
     return {'woe': out, 'iv': iv}
 
 
-def iv_rank(df, y, n=10, min_split=10, sorted=True):
+def iv_rank(df: PandasDF, y: Union[List[float], Array[float]],
+            n: int = 10, min_split: int = 10, sorted: bool = True) -> PandasDF:
     """
     param:
         df: data with independent variables

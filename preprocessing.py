@@ -1,13 +1,16 @@
 import pandas as pd
 import numpy as np
 import warnings
+from numpy import array as Array
+from pandas import DataFrame as PandasDF
+from typing import Any, List, Union
 
 
-def convert_dummy_df(df,
-                     drop_first=True,
-                     drop_missing_rate=.9,
-                     drop_unique_rate=.1,
-                     na_replace=-999):
+def convert_dummy_df(df: PandasDF,
+                     drop_first: PandasDF = True,
+                     drop_missing_rate: float = .9,
+                     drop_unique_rate: float = .1,
+                     na_replace: int = -999) -> PandasDF:
     for i in df.columns.tolist():
         df[i] = convert_to_float(df[i].values)
         if df[i].dtype == 'O' and df[i].nunique() > drop_unique_rate * len(df[i]):
@@ -38,7 +41,7 @@ def convert_dummy_df(df,
     return df_dummy
 
 
-def convert_to_float(var, replace_missing=np.nan):
+def convert_to_float(var: Union[List[Any], Array], replace_missing: float = np.nan) -> Array[Any]:
     """
         To do:
             This function replace '', '(null)', " " into numpy nan and transform var
@@ -66,7 +69,7 @@ def convert_to_float(var, replace_missing=np.nan):
         var_float = np.array([float(x) for x in var_float],
                              dtype='float64').reshape(var_float.shape)
         return var_float
-    except:
+    except ValueError:
         warnings.warn("Cannot transform to numpy float64.")
         var = np.array([str(x) if str(x) != 'nan' else replace_missing for x in var.flat], dtype='object')
         return var
